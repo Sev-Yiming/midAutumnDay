@@ -1,0 +1,72 @@
+import processing.serial.*;
+
+Serial myPort;
+String val;
+
+PImage moon;
+PImage rotate;
+PImage words;
+float angle;
+float speed = 0.0013;
+int month = 1;
+int date = 1;
+int a = 1;
+PFont font1;
+
+void setup() {
+  size(600, 849);
+  background(0);
+  moon = loadImage("fullmoon02.jpg");
+  rotate = loadImage("011.png");
+  words = loadImage("words.png");
+  imageMode(CENTER);
+  font1 = loadFont("AppleSDGothicNeo-UltraLight-30.vlw");
+  println(Serial.list());
+
+  String portName = Serial.list()[1];
+  myPort = new Serial(this, portName, 9600);
+}
+void draw() {
+
+  if ( myPort.available() > 0) 
+  { 
+    val = myPort.readStringUntil('\n');
+  } 
+  println(val); 
+  //angle=map(int(val), 5, 180, 0, PI/5*6);
+
+
+  pushMatrix();
+  angle += speed;
+  image(moon, width/2, height/2);
+  translate(width/2, height/2);
+  rotate(angle);
+  image(rotate, 0, 0);
+
+  if (angle >= PI*5/7 || angle <=0) {
+    speed = speed * (-1);
+  }
+  popMatrix();
+
+  rect(40, 38, 8, 45);
+  fill(255);
+  textFont(font1, 30);
+  text("moon phases", 60, 70);
+  fill(255);
+  stroke(50);
+  fill(255);
+
+  a +=1;
+  date = 3+int(a/80);
+
+  if (date >=31) {
+    date=4;
+  }
+
+  rect(564, 38, 8, 45);
+  fill(255);
+  textFont(font1, 30);
+  text("Day:"+val, 470, 70);
+  fill(255);
+  image(words,width/2,height/2);
+}
